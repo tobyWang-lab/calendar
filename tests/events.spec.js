@@ -16,23 +16,25 @@ beforeEach(()=>{
 })
 
 describe('EventsStore (T21)', ()=>{
-  it('adds an event and persists to localStorage', ()=>{
+  it('adds an event and persists to localStorage (includes description)', ()=>{
     const s = new EventsStore()
-    const evt = { title: 'Test', start: '2026-01-10T09:00:00+08:00', end: '2026-01-10T10:00:00+08:00', allDay:false }
+    const evt = { title: 'Test', description: '詳細', start: '2026-01-10T09:00:00+08:00', end: '2026-01-10T10:00:00+08:00', allDay:false }
     const id = s.addEvent(evt)
     expect(typeof id).toBe('string')
     const raw = localStorage.getItem(STORAGE_KEY)
     const parsed = JSON.parse(raw)
     expect(parsed.length).toBe(1)
     expect(parsed[0].title).toBe('Test')
+    expect(parsed[0].description).toBe('詳細')
   })
 
-  it('edits an existing event', ()=>{
+  it('edits an existing event including description', ()=>{
     const s = new EventsStore()
-    const id = s.addEvent({ title: 'Old', start: '2026-01-10T09:00:00+08:00', end: '2026-01-10T10:00:00+08:00' })
-    s.editEvent(id, { title: 'Updated' })
+    const id = s.addEvent({ title: 'Old', description: 'a', start: '2026-01-10T09:00:00+08:00', end: '2026-01-10T10:00:00+08:00' })
+    s.editEvent(id, { title: 'Updated', description: 'b' })
     const e = s.getEvent(id)
     expect(e.title).toBe('Updated')
+    expect(e.description).toBe('b')
   })
 
   it('deletes an event', ()=>{

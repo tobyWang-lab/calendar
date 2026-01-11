@@ -42,8 +42,28 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple
 .modal[aria-hidden='false']{display:flex}
 .modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.4)}
 .modal-content{position:relative;background:var(--bg);color:var(--fg);padding:16px;border-radius:8px;z-index:10;min-width:320px}
+.event-form .row{display:flex;gap:8px;margin-top:8px}
+.event-form .row-title{display:block}
+.event-form .input-title{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
+.event-form .row-datetimes{align-items:center}
+.event-form .input-date{flex:1;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
+.event-form .input-time{width:100px;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
+.event-form .row-desc{margin-top:12px}
+.event-form .input-desc{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg);resize:vertical}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-#event-delete{margin-right:auto;color:#c00;background:transparent;border:1px solid rgba(0,0,0,0.05);padding:6px}
+.modal-actions .spacer{flex:1}
+.modal-actions button{padding:8px 12px;border-radius:6px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--fg);cursor:pointer}
+.modal-actions button.primary{background:var(--primary);color:var(--bg);border:none}
+
+/* delete button removed from main actions to simplify UI; keep styling for potential use */
+#event-delete{display:none}
+
+/* Responsive: stack inputs on mobile */
+@media (max-width:480px){
+  .event-form .row-datetimes{flex-direction:column}
+  .event-form .input-time{width:100%}
+}
+
 
 /* Month view */
 .month-view-root{padding:12px}

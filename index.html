@@ -38,17 +38,26 @@
     <div class="modal-backdrop" data-close="true"></div>
     <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <h3 id="modal-title">事件</h3>
-      <form id="event-form">
+      <form id="event-form" class="event-form">
         <input type="hidden" id="event-id" />
-        <label>標題 <input id="event-title" name="title" required/></label>
-        <label>日期 <input id="event-date" name="date" type="date" required/></label>
-        <label>開始 <input id="event-start" name="start" type="time"/></label>
-        <label>結束 <input id="event-end" name="end" type="time"/></label>
-        <label><input id="event-allday" name="allday" type="checkbox"/> 整日</label>
+        <!-- Row 1: Title (full width) -->
+        <div class="row row-title">
+          <input id="event-title" name="title" class="input-title" placeholder="標題" required aria-label="標題" />
+        </div>
+        <!-- Row 2: Date + Start/End -->
+        <div class="row row-datetimes">
+          <input id="event-date" name="date" type="date" class="input-date" required aria-label="日期" />
+          <input id="event-start" name="start" type="time" class="input-time" aria-label="開始時間" />
+          <input id="event-end" name="end" type="time" class="input-time" aria-label="結束時間" />
+        </div>
+        <!-- Row 3: Description (full width multi-line) -->
+        <div class="row row-desc">
+          <textarea id="event-description" name="description" class="input-desc" rows="4" placeholder="詳細內容（選填）" aria-label="詳細內容"></textarea>
+        </div>
         <div class="modal-actions">
-          <button type="submit">儲存</button>
-          <button type="button" id="event-delete">刪除</button>
+          <div class="spacer"></div>
           <button type="button" data-close="true">取消</button>
+          <button type="submit" class="primary">儲存</button>
         </div>
       </form>
     </div>

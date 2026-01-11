@@ -29,17 +29,23 @@ beforeEach(()=>{
       <div class="modal-backdrop" data-close="true"></div>
       <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <h3 id="modal-title">事件</h3>
-        <form id="event-form">
+        <form id="event-form" class="event-form">
           <input type="hidden" id="event-id" />
-          <label>標題 <input id="event-title" name="title" required/></label>
-          <label>日期 <input id="event-date" name="date" type="date" required/></label>
-          <label>開始 <input id="event-start" name="start" type="time"/></label>
-          <label>結束 <input id="event-end" name="end" type="time"/></label>
-          <label><input id="event-allday" name="allday" type="checkbox"/> 整日</label>
+          <div class="row row-title">
+            <input id="event-title" name="title" class="input-title" placeholder="標題" required aria-label="標題" />
+          </div>
+          <div class="row row-datetimes">
+            <input id="event-date" name="date" type="date" class="input-date" required aria-label="日期" />
+            <input id="event-start" name="start" type="time" class="input-time" aria-label="開始時間" />
+            <input id="event-end" name="end" type="time" class="input-time" aria-label="結束時間" />
+          </div>
+          <div class="row row-desc">
+            <textarea id="event-description" name="description" class="input-desc" rows="4" placeholder="詳細內容（選填）" aria-label="詳細內容"></textarea>
+          </div>
           <div class="modal-actions">
-            <button type="submit">儲存</button>
-            <button type="button" id="event-delete">刪除</button>
+            <div class="spacer"></div>
             <button type="button" data-close="true">取消</button>
+            <button type="submit" class="primary">儲存</button>
           </div>
         </form>
       </div>
@@ -62,7 +68,7 @@ describe('event modal flows', ()=>{
     expect(dateInput.value).toBe('2026-01-10')
   })
 
-  it('creates an event via modal and it renders in month cell', ()=>{
+  it('creates an event via modal and it renders in month cell and supports description + edit prefill', ()=>{
     init()
     // switch to month view and open cell
     document.getElementById('btn-month').click()
@@ -72,17 +78,29 @@ describe('event modal flows', ()=>{
     const modal = document.getElementById('event-modal')
     const title = document.getElementById('event-title')
     const dateInput = document.getElementById('event-date')
+    const desc = document.getElementById('event-description')
     title.value = '測試事件'
     dateInput.value = '2026-01-11'
+    desc.value = '這是一個描述'
     // submit form
     document.getElementById('event-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
     // modal closed
     expect(modal.getAttribute('aria-hidden')).toBe('true')
-    // verify store has the new event
-    expect(eventsStore.getAll().some(ev=>ev.title==='測試事件')).toBe(true)
+    // verify store has the new event with description
+    const found = eventsStore.getAll().find(ev=>ev.title==='測試事件')
+    expect(found).toBeTruthy()
+    expect(found.description).toBe('這是一個描述')
     // re-rendered event appears (re-query the DOM because month view re-renders)
     const newCell = document.querySelector('[data-date="2026-01-11"]')
     const items = newCell.querySelectorAll('.event-summary .item')
     expect(Array.from(items).some(it=>it.textContent.includes('測試事件'))).toBe(true)
+
+    // switch to week view to click event and verify edit modal pre-fills description
+    document.getElementById('btn-week').click()
+    const evEl = document.querySelector(`.event[data-id="${found.id}"]`)
+    expect(evEl).toBeTruthy()
+    evEl.click()
+    const descInput = document.getElementById('event-description')
+    expect(descInput.value).toBe('這是一個描述')
   })
 })

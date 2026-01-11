@@ -50,13 +50,16 @@ function openEventModalForDate(date){
   const dateEl = document.getElementById('event-date')
   const startEl = document.getElementById('event-start')
   const endEl = document.getElementById('event-end')
+  const descEl = document.getElementById('event-description')
   const allDayEl = document.getElementById('event-allday')
 
   if(idEl) idEl.value = ''
   if(titleEl) titleEl.value = ''
-  if(dateEl) dateEl.value = date
+  // default date to app's anchor day when missing
+  if(dateEl) dateEl.value = date || '2026-01-10'
   if(startEl) startEl.value = ''
   if(endEl) endEl.value = ''
+  if(descEl) descEl.value = ''
   if(allDayEl) allDayEl.checked = false
   modal.setAttribute('aria-hidden','false')
 }
@@ -69,6 +72,7 @@ function openEventModalForEdit(id){
   const dateEl = document.getElementById('event-date')
   const startEl = document.getElementById('event-start')
   const endEl = document.getElementById('event-end')
+  const descEl = document.getElementById('event-description')
   const allDayEl = document.getElementById('event-allday')
 
   const evt = eventsStore.getEvent(id)
@@ -78,6 +82,7 @@ function openEventModalForEdit(id){
   if(dateEl) dateEl.value = evt.start.slice(0,10)
   if(startEl) startEl.value = evt.start.slice(11,16)
   if(endEl) endEl.value = evt.end.slice(11,16)
+  if(descEl) descEl.value = evt.description || ''
   if(allDayEl) allDayEl.checked = !!evt.allDay
   modal.setAttribute('aria-hidden','false')
 }
@@ -139,13 +144,15 @@ export function init(){
         const date = document.getElementById('event-date').value
         const start = document.getElementById('event-start').value
         const end = document.getElementById('event-end').value
-        const allDay = document.getElementById('event-allday').checked
+        const description = document.getElementById('event-description').value
+        const allDayEl = document.getElementById('event-allday')
+        const allDay = allDayEl ? allDayEl.checked : false
         const startISO = start ? `${date}T${start}:00+08:00` : `${date}T00:00:00+08:00`
         const endISO = end ? `${date}T${end}:00+08:00` : `${date}T23:59:00+08:00`
         if(id){
-          eventsStore.editEvent(id, { title, start: startISO, end: endISO, allDay })
+          eventsStore.editEvent(id, { title, start: startISO, end: endISO, allDay, description })
         } else {
-          eventsStore.addEvent({ title, start: startISO, end: endISO, allDay })
+          eventsStore.addEvent({ title, start: startISO, end: endISO, allDay, description })
         }
         modal.setAttribute('aria-hidden','true')
       })
