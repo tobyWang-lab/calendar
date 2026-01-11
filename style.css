@@ -1,0 +1,29 @@
+:root{
+  --bg: #ffffff;
+  --fg: #111827;
+  --muted: #6b7280;
+}
+
+[data-theme='dark']{
+  --bg: #0b1220;
+  --fg: #e6eef8;
+  --muted: #9ca3af;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+.app-header{display:flex;justify-content:space-between;align-items:center;padding:12px}
+.controls button,.actions button{margin-right:8px;padding:8px 10px;border-radius:6px;border:1px solid #ddd;background:transparent;cursor:pointer}
+
+/* Placeholder week view */
+.week-view{display:grid;grid-template-columns:60px 1fr;gap:8px}
+.time-col{border-right:1px solid #eee;padding-right:8px}
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+
+/* Placeholder month view */
+.month-view{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+
+/* Responsive */
+@media (max-width:600px){
+  .days-grid{overflow-x:auto;display:flex}
+}

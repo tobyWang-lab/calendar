@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple Calendar App</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="controls">
+      <button id="btn-week" aria-label="切換週視圖" title="週視圖">🗓️</button>
+      <button id="btn-month" aria-label="切換月視圖" title="月視圖">📅</button>
+    </div>
+    <div class="actions">
+      <button id="btn-today" aria-label="回到今日" title="回到今日">今日</button>
+      <button id="btn-theme" aria-label="切換主題" title="切換主題">🌙/☀️</button>
+    </div>
+  </header>
+
+  <main id="app" class="app">
+    <!-- week / month views injected here -->
+  </main>
+
+  <script type="module" src="/script.js"></script>
+</body>
+</html>
