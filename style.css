@@ -2,28 +2,37 @@
   --bg: #ffffff;
   --fg: #111827;
   --muted: #6b7280;
+  --primary: #2563eb; /* blue for today */
 }
 
 [data-theme='dark']{
   --bg: #0b1220;
   --fg: #e6eef8;
   --muted: #9ca3af;
+  --primary: #3b82f6;
 }
 
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
 .app-header{display:flex;justify-content:space-between;align-items:center;padding:12px}
 .controls button,.actions button{margin-right:8px;padding:8px 10px;border-radius:6px;border:1px solid #ddd;background:transparent;cursor:pointer}
+.icon-btn svg{display:block}
 
-/* Placeholder week view */
-.week-view{display:grid;grid-template-columns:60px 1fr;gap:8px}
+/* Week view */
+.week-view{display:grid;grid-template-columns:60px 1fr;gap:8px;padding:12px}
 .time-col{border-right:1px solid #eee;padding-right:8px}
-.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.time-slot{height:48px;font-size:10px;color:var(--muted);display:flex;align-items:flex-start;padding-top:4px}
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day{border-left:1px solid rgba(0,0,0,0.04);position:relative;min-height:24*48px}
+.day-header{padding:8px 6px;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px}
+.day.today .day-header{background:linear-gradient(90deg,var(--primary),rgba(59,130,246,0.1));color:var(--bg);font-weight:600}
+.day-body{position:relative;min-height:24*48px}
+.event{position:absolute;left:8px;right:8px;background:rgba(37,99,235,0.08);border-left:4px solid var(--primary);padding:4px 6px;border-radius:4px;font-size:12px;overflow:hidden}
 
-/* Placeholder month view */
-.month-view{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-
-/* Responsive */
+/* Mobile responsive: horizontal scroll for days */
 @media (max-width:600px){
-  .days-grid{overflow-x:auto;display:flex}
+  .week-view{grid-template-columns:1fr}
+  .time-col{display:none}
+  .days-grid{display:flex;overflow-x:auto;padding-bottom:12px}
+  .day{min-width:160px}
 }
