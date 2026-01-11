@@ -37,6 +37,14 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple
   .day{min-width:160px}
 }
 
+/* Modal style */
+.modal{display:none;position:fixed;inset:0;align-items:center;justify-content:center}
+.modal[aria-hidden='false']{display:flex}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.4)}
+.modal-content{position:relative;background:var(--bg);color:var(--fg);padding:16px;border-radius:8px;z-index:10;min-width:320px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+#event-delete{margin-right:auto;color:#c00;background:transparent;border:1px solid rgba(0,0,0,0.05);padding:6px}
+
 /* Month view */
 .month-view-root{padding:12px}
 .month-grid{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:80px;gap:6px}

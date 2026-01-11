@@ -50,7 +50,11 @@ export function renderMonth(container, monthDate, events = [], lunarData = {}){
 
     // collect events for this date
     const dayEvents = events.filter(ev => {
-      const s = typeof ev.start === 'string' ? dfParseISO(ev.start) : ev.start
+      // prefer using the ISO date portion when available in the string to avoid timezone shifts
+      if(typeof ev.start === 'string'){
+        return ev.start.slice(0,10) === iso
+      }
+      const s = ev.start
       return s.toISOString().slice(0,10) === iso
     })
 
