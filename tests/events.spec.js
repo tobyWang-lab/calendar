@@ -56,4 +56,26 @@ describe('EventsStore (T21)', ()=>{
     s.deleteEvent(id)
     expect(cb).toHaveBeenCalledTimes(3)
   })
+
+  it('adds an all-day event and persists isAllDay with next-day end', ()=>{
+    const s = new EventsStore()
+    const id = s.addEvent({ title: 'AllDay', isAllDay: true, start: '2026-01-12T00:00:00+08:00', end: '2026-01-13T00:00:00+08:00' })
+    const raw = localStorage.getItem(STORAGE_KEY)
+    const parsed = JSON.parse(raw)
+    expect(parsed.length).toBe(1)
+    expect(parsed[0].title).toBe('AllDay')
+    expect(parsed[0].isAllDay).toBe(true)
+    expect(parsed[0].start).toBe('2026-01-12T00:00:00+08:00')
+    expect(parsed[0].end).toBe('2026-01-13T00:00:00+08:00')
+  })
+
+  it('can toggle isAllDay on edit and updates start/end', ()=>{
+    const s = new EventsStore()
+    const id = s.addEvent({ title: 'A', start: '2026-01-12T09:00:00+08:00', end: '2026-01-12T10:00:00+08:00' })
+    s.editEvent(id, { isAllDay: true, start: '2026-01-12T00:00:00+08:00', end: '2026-01-13T00:00:00+08:00' })
+    const e = s.getEvent(id)
+    expect(e.isAllDay).toBe(true)
+    expect(e.start).toBe('2026-01-12T00:00:00+08:00')
+    expect(e.end).toBe('2026-01-13T00:00:00+08:00')
+  })
 })

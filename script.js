@@ -42,6 +42,23 @@ export function renderCurrentView(container){
   })
 }
 
+// helper: toggle visibility and disabled state of time row
+function setAllDayUI(checked){
+  const rowTimes = document.querySelector('.row-times')
+  const startEl = document.getElementById('event-start')
+  const endEl = document.getElementById('event-end')
+  if(!rowTimes || !startEl || !endEl) return
+  if(checked){
+    rowTimes.classList.add('hidden')
+    startEl.disabled = true
+    endEl.disabled = true
+  } else {
+    rowTimes.classList.remove('hidden')
+    startEl.disabled = false
+    endEl.disabled = false
+  }
+}
+
 function openEventModalForDate(date){
   const modal = document.getElementById('event-modal')
   if(!modal) return
@@ -60,7 +77,10 @@ function openEventModalForDate(date){
   if(startEl) startEl.value = ''
   if(endEl) endEl.value = ''
   if(descEl) descEl.value = ''
-  if(allDayEl) allDayEl.checked = false
+  if(allDayEl) {
+    allDayEl.checked = false
+    setAllDayUI(false)
+  }
   modal.setAttribute('aria-hidden','false')
 }
 
@@ -80,10 +100,15 @@ function openEventModalForEdit(id){
   if(idEl) idEl.value = evt.id
   if(titleEl) titleEl.value = evt.title
   if(dateEl) dateEl.value = evt.start.slice(0,10)
-  if(startEl) startEl.value = evt.start.slice(11,16)
-  if(endEl) endEl.value = evt.end.slice(11,16)
+  // prefill times only when not isAllDay
+  const isAllDay = !!evt.isAllDay || !!evt.allDay
+  if(startEl) startEl.value = isAllDay ? '' : evt.start.slice(11,16)
+  if(endEl) endEl.value = isAllDay ? '' : evt.end.slice(11,16)
   if(descEl) descEl.value = evt.description || ''
-  if(allDayEl) allDayEl.checked = !!evt.allDay
+  if(allDayEl){
+    allDayEl.checked = isAllDay
+    setAllDayUI(isAllDay)
+  }
   modal.setAttribute('aria-hidden','false')
 }
 
@@ -137,6 +162,11 @@ export function init(){
     modal.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click', ()=>modal.setAttribute('aria-hidden','true')))
     const form = document.getElementById('event-form')
     if(form){
+      const allDayCheckbox = document.getElementById('event-allday')
+      if(allDayCheckbox) allDayCheckbox.addEventListener('change', (e)=>{
+        setAllDayUI(e.target.checked)
+      })
+
       form.addEventListener('submit',(e)=>{
         e.preventDefault()
         const id = document.getElementById('event-id').value
@@ -146,13 +176,34 @@ export function init(){
         const end = document.getElementById('event-end').value
         const description = document.getElementById('event-description').value
         const allDayEl = document.getElementById('event-allday')
-        const allDay = allDayEl ? allDayEl.checked : false
-        const startISO = start ? `${date}T${start}:00+08:00` : `${date}T00:00:00+08:00`
-        const endISO = end ? `${date}T${end}:00+08:00` : `${date}T23:59:00+08:00`
-        if(id){
-          eventsStore.editEvent(id, { title, start: startISO, end: endISO, allDay, description })
+        const isAllDay = allDayEl ? allDayEl.checked : false
+        let startISO, endISO
+        if(isAllDay){
+          // start at date 00:00, end is next day 00:00
+          startISO = `${date}T00:00:00+08:00`
+          // compute next date using UTC arithmetic to avoid timezone shifts
+          function addDaysISO(dateStr, n){
+            const [yy,mm,dd] = dateStr.split('-').map(Number)
+            const dt = new Date(Date.UTC(yy, mm-1, dd))
+            dt.setUTCDate(dt.getUTCDate() + n)
+            const y2 = dt.getUTCFullYear()
+            const m2 = String(dt.getUTCMonth()+1).padStart(2,'0')
+            const d2 = String(dt.getUTCDate()).padStart(2,'0')
+            return `${y2}-${m2}-${d2}`
+          }
+          const nextDate = addDaysISO(date, 1)
+          endISO = `${nextDate}T00:00:00+08:00`
         } else {
-          eventsStore.addEvent({ title, start: startISO, end: endISO, allDay, description })
+          startISO = start ? `${date}T${start}:00+08:00` : `${date}T00:00:00+08:00`
+          endISO = end ? `${date}T${end}:00+08:00` : `${date}T23:59:00+08:00`
+        }
+        // debug output to verify computed dates in tests
+        // console.log('SUBMIT', { date, isAllDay, startISO, endISO })
+        const payload = { title, start: startISO, end: endISO, description, isAllDay }
+        if(id){
+          eventsStore.editEvent(id, payload)
+        } else {
+          eventsStore.addEvent(payload)
         }
         modal.setAttribute('aria-hidden','true')
       })

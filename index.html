@@ -44,13 +44,17 @@
         <div class="row row-title">
           <input id="event-title" name="title" class="input-title" placeholder="標題" required aria-label="標題" />
         </div>
-        <!-- Row 2: Date + Start/End -->
+        <!-- Row 2: Date + All-day checkbox (right) -->
         <div class="row row-datetimes">
           <input id="event-date" name="date" type="date" class="input-date" required aria-label="日期" />
+          <label class="all-day"><input id="event-allday" name="allday" type="checkbox" aria-label="整天"/> 整天</label>
+        </div>
+        <!-- Row 3: Start -> End times (hidden when all-day) -->
+        <div class="row row-times">
           <input id="event-start" name="start" type="time" class="input-time" aria-label="開始時間" />
           <input id="event-end" name="end" type="time" class="input-time" aria-label="結束時間" />
         </div>
-        <!-- Row 3: Description (full width multi-line) -->
+        <!-- Row 4: Description (full width multi-line) -->
         <div class="row row-desc">
           <textarea id="event-description" name="description" class="input-desc" rows="4" placeholder="詳細內容（選填）" aria-label="詳細內容"></textarea>
         </div>

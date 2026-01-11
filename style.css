@@ -47,7 +47,9 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple
 .event-form .input-title{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
 .event-form .row-datetimes{align-items:center}
 .event-form .input-date{flex:1;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
-.event-form .input-time{width:100px;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
+.event-form .all-day{margin-left:8px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.event-form .row-times{margin-top:6px;display:flex;gap:8px}
+.event-form .input-time{width:140px;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
 .event-form .row-desc{margin-top:12px}
 .event-form .input-desc{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg);resize:vertical}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
@@ -55,12 +57,17 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple
 .modal-actions button{padding:8px 12px;border-radius:6px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--fg);cursor:pointer}
 .modal-actions button.primary{background:var(--primary);color:var(--bg);border:none}
 
+/* hide time row when all-day */
+.row-times.hidden{display:none}
+.row-times.hidden .input-time{display:none}
+
 /* delete button removed from main actions to simplify UI; keep styling for potential use */
 #event-delete{display:none}
 
 /* Responsive: stack inputs on mobile */
 @media (max-width:480px){
   .event-form .row-datetimes{flex-direction:column}
+  .event-form .row-times{flex-direction:column}
   .event-form .input-time{width:100%}
 }
 

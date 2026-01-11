@@ -36,6 +36,9 @@ beforeEach(()=>{
           </div>
           <div class="row row-datetimes">
             <input id="event-date" name="date" type="date" class="input-date" required aria-label="日期" />
+            <label class="all-day"><input id="event-allday" name="allday" type="checkbox" aria-label="整天"/> 整天</label>
+          </div>
+          <div class="row row-times">
             <input id="event-start" name="start" type="time" class="input-time" aria-label="開始時間" />
             <input id="event-end" name="end" type="time" class="input-time" aria-label="結束時間" />
           </div>
@@ -79,28 +82,37 @@ describe('event modal flows', ()=>{
     const title = document.getElementById('event-title')
     const dateInput = document.getElementById('event-date')
     const desc = document.getElementById('event-description')
+    const allDay = document.getElementById('event-allday')
     title.value = '測試事件'
     dateInput.value = '2026-01-11'
     desc.value = '這是一個描述'
+    // check all-day and ensure times hide
+    allDay.checked = true
+    allDay.dispatchEvent(new Event('change', { bubbles:true }))
     // submit form
     document.getElementById('event-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
     // modal closed
     expect(modal.getAttribute('aria-hidden')).toBe('true')
-    // verify store has the new event with description
+    // verify store has the new event with description and isAllDay true
     const found = eventsStore.getAll().find(ev=>ev.title==='測試事件')
     expect(found).toBeTruthy()
     expect(found.description).toBe('這是一個描述')
+    expect(found.isAllDay).toBe(true)
+    expect(found.start).toBe('2026-01-11T00:00:00+08:00')
+    expect(found.end).toBe('2026-01-12T00:00:00+08:00')
     // re-rendered event appears (re-query the DOM because month view re-renders)
     const newCell = document.querySelector('[data-date="2026-01-11"]')
     const items = newCell.querySelectorAll('.event-summary .item')
     expect(Array.from(items).some(it=>it.textContent.includes('測試事件'))).toBe(true)
 
-    // switch to week view to click event and verify edit modal pre-fills description
+    // switch to week view to click event and verify edit modal pre-fills description and all-day state
     document.getElementById('btn-week').click()
     const evEl = document.querySelector(`.event[data-id="${found.id}"]`)
     expect(evEl).toBeTruthy()
     evEl.click()
     const descInput = document.getElementById('event-description')
+    const allDayInput = document.getElementById('event-allday')
     expect(descInput.value).toBe('這是一個描述')
+    expect(allDayInput.checked).toBe(true)
   })
 })
