@@ -78,5 +78,7 @@ describe('week-renderer (T11)', ()=>{
     // duration 3h -> 3/24 = 12.5%
     expect(Math.round(height*10)/10).toBe(12.5)
     expect(ev.style.background).toBe('var(--primary)')
+    expect(ev.style.opacity).toBe('0.8')
+    expect(ev.getAttribute('role')).toBe('button')
   })
 })

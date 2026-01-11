@@ -74,8 +74,13 @@ export function renderWeek(container, weekStartDate, events = []){
     // visual style for week blocks: position by percent and use primary color background
     el.style.top = `${topPercent}%`
     el.style.height = `${heightPercent}%`
+    // Use primary color with slight opacity and ensure it overlays grid lines
     el.style.background = 'var(--primary)'
     el.style.color = 'var(--bg)'
+    el.style.opacity = '0.8'
+    el.style.zIndex = '5'
+    el.setAttribute('role','button')
+    el.style.cursor = 'pointer'
 
     dayBody.appendChild(el)
   }
