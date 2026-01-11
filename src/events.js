@@ -63,6 +63,11 @@ export class EventsStore {
     return this._events.find(e=>e.id===id) || null
   }
 
+  // alias to match API expectation loadEvent
+  loadEvent(id){
+    return this.getEvent(id)
+  }
+
   getAll(){
     return [...this._events]
   }

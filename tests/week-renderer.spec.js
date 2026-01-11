@@ -55,4 +55,28 @@ describe('week-renderer (T11)', ()=>{
     // 09:00 should be 9/24 = 37.5%
     expect(Math.round(top*10)/10).toBe(37.5)
   })
+
+  it('renders 18:00-21:00 block with correct top and height and primary background', ()=>{
+    const vs = new ViewState({ currentDate: '2026-01-10', view: 'month' })
+    const container = document.createElement('div')
+
+    const events = [{ id: 'evt_2', title: '晚間', start: '2026-01-10T18:00:00+08:00', end: '2026-01-10T21:00:00+08:00', allDay:false }]
+
+    vs.on('viewchange', ()=>{
+      if(vs.getState().view === 'week'){
+        renderWeek(container, vs.getCurrentWeek(), events)
+      }
+    })
+
+    vs.switchView('week')
+    const ev = container.querySelector('.event[data-id="evt_2"]')
+    expect(ev).toBeTruthy()
+    const top = parseFloat(ev.style.top)
+    const height = parseFloat(ev.style.height)
+    // 18:00 = 18/24 = 75%
+    expect(Math.round(top*10)/10).toBe(75.0)
+    // duration 3h -> 3/24 = 12.5%
+    expect(Math.round(height*10)/10).toBe(12.5)
+    expect(ev.style.background).toBe('var(--primary)')
+  })
 })

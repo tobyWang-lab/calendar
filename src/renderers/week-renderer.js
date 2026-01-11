@@ -71,8 +71,11 @@ export function renderWeek(container, weekStartDate, events = []){
     el.className = 'event'
     el.setAttribute('data-id', ev.id)
     el.textContent = ev.title
+    // visual style for week blocks: position by percent and use primary color background
     el.style.top = `${topPercent}%`
     el.style.height = `${heightPercent}%`
+    el.style.background = 'var(--primary)'
+    el.style.color = 'var(--bg)'
 
     dayBody.appendChild(el)
   }

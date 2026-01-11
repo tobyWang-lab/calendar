@@ -60,7 +60,10 @@ export function renderMonth(container, monthDate, events = [], lunarData = {}){
 
     dayEvents.slice(0,3).forEach(ev => {
       const it = document.createElement('div')
-      it.className = 'item'
+      // mark summary items as clickable event entries
+      it.className = 'item event'
+      it.setAttribute('data-id', ev.id)
+      it.setAttribute('role','button')
       it.textContent = ev.title
       eventsWrap.appendChild(it)
     })

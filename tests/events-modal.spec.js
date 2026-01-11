@@ -102,10 +102,21 @@ describe('event modal flows', ()=>{
     expect(found.end).toBe('2026-01-12T00:00:00+08:00')
     // re-rendered event appears (re-query the DOM because month view re-renders)
     const newCell = document.querySelector('[data-date="2026-01-11"]')
-    const items = newCell.querySelectorAll('.event-summary .item')
+    const items = newCell.querySelectorAll('.event-summary .item.event')
     expect(Array.from(items).some(it=>it.textContent.includes('測試事件'))).toBe(true)
 
-    // switch to week view to click event and verify edit modal pre-fills description and all-day state
+    // click the month summary item to edit and verify prefill (month click)
+    const monthItem = newCell.querySelector('.event-summary .item.event')
+    expect(monthItem).toBeTruthy()
+    monthItem.click()
+    const modalAfterMonthClick = document.getElementById('event-modal')
+    expect(modalAfterMonthClick.getAttribute('aria-hidden')).toBe('false')
+    const descAfterMonth = document.getElementById('event-description')
+    const allDayAfterMonth = document.getElementById('event-allday')
+    expect(descAfterMonth.value).toBe('這是一個描述')
+    expect(allDayAfterMonth.checked).toBe(true)
+
+    // switch to week view to click event and verify edit modal pre-fills description and all-day state (week click)
     document.getElementById('btn-week').click()
     const evEl = document.querySelector(`.event[data-id="${found.id}"]`)
     expect(evEl).toBeTruthy()
