@@ -23,10 +23,10 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple
 .time-col{border-right:1px solid #eee;padding-right:8px}
 .time-slot{height:48px;font-size:10px;color:var(--muted);display:flex;align-items:flex-start;padding-top:4px}
 .days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.day{border-left:1px solid rgba(0,0,0,0.04);position:relative;min-height:24*48px}
+.day{border-left:1px solid rgba(0,0,0,0.04);position:relative;min-height:1152px}
 .day-header{padding:8px 6px;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px}
 .day.today .day-header{background:linear-gradient(90deg,var(--primary),rgba(59,130,246,0.1));color:var(--bg);font-weight:600}
-.day-body{position:relative;min-height:24*48px}
+.day-body{position:relative;min-height:1152px}
 .event{position:absolute;left:8px;right:8px;background:rgba(37,99,235,0.08);border-left:4px solid var(--primary);padding:4px 6px;border-radius:4px;font-size:12px;overflow:hidden}
 
 /* Mobile responsive: horizontal scroll for days */
@@ -50,6 +50,11 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, -apple
 .event-form .all-day{margin-left:8px;display:flex;align-items:center;gap:6px;color:var(--muted)}
 .event-form .row-times{margin-top:6px;display:flex;gap:8px}
 .event-form .input-time{width:140px;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg)}
+.time-picker{display:flex;gap:6px;align-items:center}
+.time-picker select{padding:8px 10px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg);font-size:14px}
+.time-sep{display:flex;align-items:center;justify-content:center;padding:0 8px;font-size:20px;color:var(--muted)}
+/* make AM/PM slightly narrower */
+.input-time-ampm{width:70px;text-align:center}
 .event-form .row-desc{margin-top:12px}
 .event-form .input-desc{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--fg);resize:vertical}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}

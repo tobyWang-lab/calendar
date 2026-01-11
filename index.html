@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Simple Calendar App</title>
-  <link rel="stylesheet" href="/style.css" />
-</head>
+  <link rel="stylesheet" href="/style.css" />  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" /></head>
 <body>
   <header class="app-header">
     <div class="controls">
@@ -51,8 +51,26 @@
         </div>
         <!-- Row 3: Start -> End times (hidden when all-day) -->
         <div class="row row-times">
-          <input id="event-start" name="start" type="time" class="input-time" aria-label="開始時間" />
-          <input id="event-end" name="end" type="time" class="input-time" aria-label="結束時間" />
+          <!-- custom time picker: hour / minute / ampm selects + hidden value input -->
+          <div class="time-picker">
+            <select id="event-start-ampm" class="input-time-ampm" aria-label="開始上下午">
+              <option value="AM">上午</option>
+              <option value="PM">下午</option>
+            </select>
+            <select id="event-start-hour" class="input-time-hour" aria-label="開始小時"></select>
+            <select id="event-start-minute" class="input-time-minute" aria-label="開始分鐘"></select>
+            <input id="event-start" name="start" type="hidden" aria-hidden="true" />
+          </div>
+          <div class="time-sep" aria-hidden="true">～</div>
+          <div class="time-picker">
+            <select id="event-end-ampm" class="input-time-ampm" aria-label="結束上下午">
+              <option value="AM">上午</option>
+              <option value="PM">下午</option>
+            </select>
+            <select id="event-end-hour" class="input-time-hour" aria-label="結束小時"></select>
+            <select id="event-end-minute" class="input-time-minute" aria-label="結束分鐘"></select>
+            <input id="event-end" name="end" type="hidden" aria-hidden="true" />
+          </div>
         </div>
         <!-- Row 4: Description (full width multi-line) -->
         <div class="row row-desc">

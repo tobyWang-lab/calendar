@@ -3,7 +3,9 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'jsdom'
+    environment: 'jsdom',
+    // exclude Playwright / e2e folders and node_modules from Vitest
+    exclude: ['playwright/**', 'tests/e2e/**', 'e2e/**', 'node_modules/**']
   },
   coverage: {
     provider: 'istanbul',

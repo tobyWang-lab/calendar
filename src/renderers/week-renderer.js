@@ -1,15 +1,15 @@
 import { format as dfFormat, addDays as dfAddDays, parseISO as dfParseISO } from 'date-fns'
 
-function toISODate(d){
-  // input can be string or Date
+function toLocalYMD(d){
+  // input can be string or Date; return local YYYY-MM-DD
   const date = typeof d === 'string' ? dfParseISO(d) : d
-  return date.toISOString().slice(0,10)
+  return dfFormat(date, 'yyyy-MM-dd')
 }
 
 export function renderWeek(container, weekStartDate, events = []){
   // clear
   container.innerHTML = ''
-  const weekStartISO = toISODate(weekStartDate)
+  const weekStartISO = toLocalYMD(weekStartDate)
 
   const root = document.createElement('div')
   root.className = 'week-view'
@@ -31,7 +31,7 @@ export function renderWeek(container, weekStartDate, events = []){
   // build 7 days
   for(let i=0; i<7; i++){
     const d = dfAddDays(weekStartDate, i)
-    const iso = toISODate(d)
+    const iso = toLocalYMD(d)
     const day = document.createElement('div')
     day.className = 'day'
     day.setAttribute('data-date', iso)
@@ -49,40 +49,78 @@ export function renderWeek(container, weekStartDate, events = []){
   }
 
   // highlight today if matches any
-  const todayISO = new Date().toISOString().slice(0,10)
+  const todayISO = dfFormat(new Date(), 'yyyy-MM-dd')
   const todayEl = daysGrid.querySelector(`[data-date="${todayISO}"]`)
   if(todayEl){
     todayEl.classList.add('today')
   }
 
-  // render events
+  // group events by day (local date) for layout
+  const eventsByDay = new Map()
   for(const ev of events){
     const evStart = typeof ev.start === 'string' ? dfParseISO(ev.start) : ev.start
     const evEnd = typeof ev.end === 'string' ? dfParseISO(ev.end) : ev.end
-    const dateISO = evStart.toISOString().slice(0,10)
+    const dateISO = dfFormat(evStart, 'yyyy-MM-dd')
+
+    if(!eventsByDay.has(dateISO)) eventsByDay.set(dateISO, [])
+    eventsByDay.get(dateISO).push({ ev, evStart, evEnd })
+  }
+
+  // for each day, layout events with overlapping columns
+  for(const [dateISO, dayEvents] of eventsByDay.entries()){
     const dayBody = daysGrid.querySelector(`[data-date="${dateISO}"] .day-body`)
     if(!dayBody) continue
 
-    const topPercent = ((evStart.getHours()*60 + evStart.getMinutes()) / (24*60)) * 100
-    const durationMinutes = (evEnd - evStart) / (60*1000)
-    const heightPercent = (durationMinutes / (24*60)) * 100
+    // sort by start
+    dayEvents.sort((a,b)=> a.evStart - b.evStart)
 
-    const el = document.createElement('div')
-    el.className = 'event'
-    el.setAttribute('data-id', ev.id)
-    el.textContent = ev.title
-    // visual style for week blocks: position by percent and use primary color background
-    el.style.top = `${topPercent}%`
-    el.style.height = `${heightPercent}%`
-    // Use primary color with slight opacity and ensure it overlays grid lines
-    el.style.background = 'var(--primary)'
-    el.style.color = 'var(--bg)'
-    el.style.opacity = '0.8'
-    el.style.zIndex = '5'
-    el.setAttribute('role','button')
-    el.style.cursor = 'pointer'
+    // assign columns greedily
+    const columns = [] // each column stores endMinute
+    const elements = []
 
-    dayBody.appendChild(el)
+    for(const item of dayEvents){
+      const { ev, evStart, evEnd } = item
+      const startMinutes = evStart.getHours()*60 + evStart.getMinutes()
+      const durationMinutes = (evEnd - evStart) / (60*1000)
+      const topPercent = (startMinutes / (24*60)) * 100
+      const heightPercent = (durationMinutes / (24*60)) * 100
+
+      // find a column where this event doesn't overlap (start >= column end)
+      let colIndex = -1
+      for(let i=0;i<columns.length;i++){
+        if(startMinutes >= columns[i]){ colIndex = i; break }
+      }
+      if(colIndex === -1){ colIndex = columns.length; columns.push(startMinutes + durationMinutes) }
+      else { columns[colIndex] = startMinutes + durationMinutes }
+
+      const el = document.createElement('div')
+      el.className = 'event'
+      el.setAttribute('data-id', ev.id)
+      el.textContent = ev.title
+      el.setAttribute('data-top-percent', String(topPercent))
+      el.setAttribute('data-height-percent', String(heightPercent))
+      el.style.top = `calc(${topPercent}% - 1px)`
+      el.style.height = `${heightPercent}%`
+      el.style.setProperty('background', 'var(--primary)', 'important')
+      el.style.color = 'var(--bg)'
+      el.style.opacity = '0.8'
+      el.style.zIndex = '10'
+      el.setAttribute('role','button')
+      el.style.cursor = 'pointer'
+      // override right so we control width/left
+      el.style.right = 'auto'
+
+      elements.push({ el, colIndex })
+    }
+
+    const numCols = Math.max(1, columns.length)
+    // apply left/width based on columns
+    elements.forEach(({ el, colIndex }) =>{
+      const leftPercent = (colIndex / numCols) * 100
+      el.style.left = `calc(${leftPercent}% + 8px)`
+      el.style.width = `calc(${100/numCols}% - 16px)`
+      dayBody.appendChild(el)
+    })
   }
 
   root.appendChild(timeCol)

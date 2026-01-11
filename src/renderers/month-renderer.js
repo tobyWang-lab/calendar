@@ -1,9 +1,9 @@
-import { startOfMonth as dfStartOfMonth, addDays as dfAddDays, startOfWeek as dfStartOfWeek, format as dfFormat, isSameMonth as dfIsSameMonth, parseISO as dfParseISO } from 'date-fns'
+import { startOfMonth as dfStartOfMonth, addDays as dfAddDays, startOfWeek as dfStartOfWeek, format as dfFormat, parseISO as dfParseISO } from 'date-fns'
 
-function toISO(d){
+function toLocalYMD(d){
   const date = typeof d === 'string' ? dfParseISO(d) : d
-  return date.toISOString().slice(0,10)
-}
+  return dfFormat(date, 'yyyy-MM-dd')
+} 
 
 export function renderMonth(container, monthDate, events = [], lunarData = {}){
   container.innerHTML = ''
@@ -17,12 +17,16 @@ export function renderMonth(container, monthDate, events = [], lunarData = {}){
   const start = dfStartOfWeek(dfStartOfMonth(monthDate), { weekStartsOn: 1 })
 
   const dayCells = []
+  // counter to assign month-relative index (1-based) to same-month cells
+  let monthCounter = 0
   for(let i=0;i<42;i++){
     const d = dfAddDays(start, i)
-    const iso = toISO(d)
+    const iso = toLocalYMD(d)
     const cell = document.createElement('div')
     cell.className = 'month-cell'
     cell.setAttribute('data-date', iso)
+    // overall grid index (1-based)
+    cell.setAttribute('data-grid-index', String(i+1))
 
     const header = document.createElement('div')
     header.className = 'date-header'
@@ -32,13 +36,20 @@ export function renderMonth(container, monthDate, events = [], lunarData = {}){
       header.setAttribute('data-lunar', lunarData[iso])
     }
 
-    if(!dfIsSameMonth(d, monthDate)){
+    // determine same-month using YYYY-MM string (avoid timezone edge cases)
+    const sameMonthKey = iso.slice(0,7)
+    const viewMonthKey = toLocalYMD(monthDate).slice(0,7)
+    if(sameMonthKey !== viewMonthKey){
       cell.classList.add('other-month')
       header.classList.add('muted')
+    } else {
+      // assign month-relative index
+      monthCounter += 1
+      cell.setAttribute('data-month-index', String(monthCounter))
     }
 
     // highlight the view's current date (e.g., currentDate from ViewState)
-    const currentViewISO = toISO(monthDate)
+    const currentViewISO = toLocalYMD(monthDate)
     if(iso === currentViewISO){
       const dot = document.createElement('span')
       dot.className = 'today-dot'
@@ -48,14 +59,10 @@ export function renderMonth(container, monthDate, events = [], lunarData = {}){
     const eventsWrap = document.createElement('div')
     eventsWrap.className = 'event-summary'
 
-    // collect events for this date
+    // collect events for this date (compare local YYYY-MM-DD to avoid timezone shifts)
     const dayEvents = events.filter(ev => {
-      // prefer using the ISO date portion when available in the string to avoid timezone shifts
-      if(typeof ev.start === 'string'){
-        return ev.start.slice(0,10) === iso
-      }
-      const s = ev.start
-      return s.toISOString().slice(0,10) === iso
+      const s = typeof ev.start === 'string' ? dfParseISO(ev.start) : ev.start
+      return dfFormat(s, 'yyyy-MM-dd') === iso
     })
 
     dayEvents.slice(0,3).forEach(ev => {

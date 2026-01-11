@@ -64,4 +64,15 @@ describe('month-renderer (T14)', ()=>{
     // lunar tooltip stored in data-lunar attribute
     expect(cell.querySelector('.date-header').getAttribute('data-lunar')).toBe('農曆十二月廿九')
   })
+
+  it('assigns month-relative grid indices correctly (1/6 -> 6, 1/14 -> 14)', ()=>{
+    const container = document.createElement('div')
+    renderMonth(container, new Date('2026-01-10'))
+    const cell6 = container.querySelector('[data-date="2026-01-06"]')
+    const cell14 = container.querySelector('[data-date="2026-01-14"]')
+    expect(cell6).toBeTruthy()
+    expect(cell14).toBeTruthy()
+    expect(cell6.getAttribute('data-month-index')).toBe('6')
+    expect(cell14.getAttribute('data-month-index')).toBe('14')
+  })
 })

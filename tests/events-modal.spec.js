@@ -39,8 +39,25 @@ beforeEach(()=>{
             <label class="all-day"><input id="event-allday" name="allday" type="checkbox" aria-label="整天"/> 整天</label>
           </div>
           <div class="row row-times">
-            <input id="event-start" name="start" type="time" class="input-time" aria-label="開始時間" />
-            <input id="event-end" name="end" type="time" class="input-time" aria-label="結束時間" />
+            <div class="time-picker">
+              <select id="event-start-ampm" class="input-time-ampm" aria-label="開始上下午">
+                <option value="AM">上午</option>
+                <option value="PM">下午</option>
+              </select>
+              <select id="event-start-hour" class="input-time-hour" aria-label="開始小時"></select>
+              <select id="event-start-minute" class="input-time-minute" aria-label="開始分鐘"></select>
+              <input id="event-start" name="start" type="hidden" aria-hidden="true" />
+            </div>
+            <div class="time-sep" aria-hidden="true">～</div>
+            <div class="time-picker">
+              <select id="event-end-ampm" class="input-time-ampm" aria-label="結束上下午">
+                <option value="AM">上午</option>
+                <option value="PM">下午</option>
+              </select>
+              <select id="event-end-hour" class="input-time-hour" aria-label="結束小時"></select>
+              <select id="event-end-minute" class="input-time-minute" aria-label="結束分鐘"></select>
+              <input id="event-end" name="end" type="hidden" aria-hidden="true" />
+            </div>
           </div>
           <div class="row row-desc">
             <textarea id="event-description" name="description" class="input-desc" rows="4" placeholder="詳細內容（選填）" aria-label="詳細內容"></textarea>
@@ -69,6 +86,27 @@ describe('event modal flows', ()=>{
     expect(modal.getAttribute('aria-hidden')).toBe('false')
     const dateInput = document.getElementById('event-date')
     expect(dateInput.value).toBe('2026-01-10')
+    const startHidden = document.getElementById('event-start')
+    const endHidden = document.getElementById('event-end')
+    const startHour = document.getElementById('event-start-hour')
+    const startMinute = document.getElementById('event-start-minute')
+    const startAMPM = document.getElementById('event-start-ampm')
+    // verify that visible selects are ordered and AM/PM is placed leftmost
+    const startPicker = startAMPM.parentElement
+    expect(startPicker.children[0].id).toBe('event-start-ampm')
+    expect(startPicker.children[1].id).toBe('event-start-hour')
+    expect(startPicker.children[2].id).toBe('event-start-minute')
+    // verify separator exists between start and end pickers
+    const sep = document.querySelector('.time-sep')
+    expect(sep).toBeTruthy()
+    expect(sep.textContent.trim()).toBe('～')
+    // hidden value should represent 00:00 in 24h format
+    expect(startHidden.value).toBe('00:00')
+    expect(endHidden.value).toBe('00:00')
+    // ensure default select values reflect midnight: 12:00 AM => hour '12', minute '00', AM
+    expect(startHour.value).toBe('12')
+    expect(startMinute.value).toBe('00')
+    expect(startAMPM.value).toBe('AM')
   })
 
   it('creates an event via modal and it renders in month cell and supports description + edit prefill', ()=>{

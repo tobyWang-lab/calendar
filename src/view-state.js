@@ -1,4 +1,3 @@
-import { parseISO as dfParseISO } from 'date-fns'
 import { startOfWeek as utilStartOfWeek } from './utils/date-utils.js'
 
 const DEFAULT_KEY = 'simple-calendar-state'
@@ -8,10 +7,6 @@ const DEFAULT_STATE = {
   currentDate: '2026-01-10'
 }
 
-function toDate(input) {
-  if (typeof input === 'string') return dfParseISO(input)
-  return input instanceof Date ? input : new Date(input)
-}
 
 export class ViewState {
   constructor(initial = {}) {

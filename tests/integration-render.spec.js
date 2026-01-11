@@ -10,7 +10,7 @@ globalThis.localStorage = (function(){
 })()
 
 import { describe, it, expect, beforeEach } from 'vitest'
-import { init, viewState, events } from '../script.js'
+import { init } from '../script.js'
 
 beforeEach(()=>{
   // setup DOM

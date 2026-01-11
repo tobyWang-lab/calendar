@@ -8,6 +8,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "analyze": "npm run build && node scripts/size-check.js",
+    "test:e2e": "playwright test",
     "lint": "eslint . --ext .js"
   },
   "dependencies": {
